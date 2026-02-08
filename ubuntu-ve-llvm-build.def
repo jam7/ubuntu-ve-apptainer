@@ -10,6 +10,7 @@ From: ubuntu:24.04
         python3 \
         git \
         zlib1g-dev \
+        make \
         curl \
         ca-certificates \
         rpm2cpio \
