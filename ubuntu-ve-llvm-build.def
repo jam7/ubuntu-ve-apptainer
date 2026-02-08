@@ -9,6 +9,26 @@ From: ubuntu:24.04
         ninja-build \
         python3 \
         git \
-        zlib1g-dev && \
+        zlib1g-dev \
+        curl \
+        ca-certificates \
+        rpm2cpio \
+        cpio && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+    # Install VE cross-compilation RPMs to /opt
+    RPM_URLS=" \
+        https://sxauroratsubasa.sakura.ne.jp/repos/runtime/sdk/sdk_el8/binutils/2.26-2.12/x86_64/binutils-ve-2.26-2.12.x86_64.rpm \
+        https://sxauroratsubasa.sakura.ne.jp/repos/TSUBASA-repo_el8.8/veos/3.3.0/x86_64/glibc-ve1-2.21-18.el8.x86_64.rpm \
+        https://sxauroratsubasa.sakura.ne.jp/repos/TSUBASA-repo_el8.8/veos/3.3.0/x86_64/glibc-ve1-devel-2.21-18.el8.x86_64.rpm \
+        https://sxauroratsubasa.sakura.ne.jp/repos/TSUBASA-repo_el8.10/veos/3.0.1/x86_64/kheaders-ve1-4.18.0-80.el8_3.el8.x86_64.rpm \
+    "
+    mkdir -p /tmp/rpms && cd /tmp/rpms
+    for url in $RPM_URLS; do
+        curl -fsSLO "$url"
+    done
+    for rpm in *.rpm; do
+        rpm2cpio "$rpm" | cpio -idm -D /
+    done
+    rm -rf /tmp/rpms
